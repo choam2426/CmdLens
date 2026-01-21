@@ -1,8 +1,10 @@
 {
   "name": "cmdlens",
   "version": "0.3.0",
-  "description": "모든 Bash 명령어 실행 전 위험도와 복구 방법을 표시",
-  "author": { "name": "choam2426" },
+  "description": "Displays risk level and recovery info before every Bash command execution",
+  "author": {
+    "name": "choam2426"
+  },
   "license": "MIT",
   "hooks": "./hooks/hooks.json"
 }
