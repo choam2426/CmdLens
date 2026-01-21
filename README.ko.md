@@ -12,7 +12,7 @@
 
 | 적용 전 | 적용 후 |
 |---------|---------|
-| ![before-output](docs/images/before-output.png) | ![after-output](docs/images/after-output.png) |
+| ![before-output](docs/images/before-output2.png) | ![after-output](docs/images/after-output.png) |
 
 ### 사용자 승인 화면
 

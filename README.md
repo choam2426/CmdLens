@@ -12,7 +12,7 @@
 
 | Before | After |
 |--------|-------|
-| ![before-output](docs/images/before-output.png) | ![after-output](docs/images/after-output.png) |
+| ![before-output](docs/images/before-output2.png) | ![after-output](docs/images/after-output.png) |
 
 ### Permission Approval Screen
 
