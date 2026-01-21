@@ -123,19 +123,33 @@ def main() -> None:
     else:
         display_cmd = command
 
-    # New format (starts with 📋): display in dynamic-width box
+    # New format (starts with 📋): parse and display each part on separate lines
     if description.startswith("📋"):
-        title = "🔍 CmdLens"
-        content_lines = [display_cmd, description]
-        max_width = max(get_display_width(title), max(get_display_width(line) for line in content_lines))
+        # Parse: 📋 desc | 🟢 Safe | 💡 Recovery: ...
+        parts = [p.strip() for p in description.split("|")]
+        desc_part = parts[0] if len(parts) > 0 else ""
+        risk_part = parts[1] if len(parts) > 1 else ""
+        recovery_part = parts[2] if len(parts) > 2 else ""
+
+        # Format risk part
+        if risk_part:
+            risk_part = f"⚠️  Risk: {risk_part}"
+
+        # Calculate max width for box
+        content_lines = [display_cmd, desc_part, risk_part, recovery_part]
+        content_lines = [l for l in content_lines if l]
+        max_width = max(get_display_width(line) for line in content_lines)
         box_width = max_width + 2
 
-        title_width = get_display_width(title)
         lines = [""]
-        lines.append(f"┌─ {title} " + "─" * (box_width - title_width - 2) + "┐")
+        lines.append("┌─ 🔍 CmdLens " + "─" * (box_width - 11) + "┐")
         lines.append(f"│ {pad_to_width(display_cmd, max_width)} │")
         lines.append("├" + "─" * box_width + "┤")
-        lines.append(f"│ {pad_to_width(description, max_width)} │")
+        lines.append(f"│ {pad_to_width(desc_part, max_width)} │")
+        if risk_part:
+            lines.append(f"│ {pad_to_width(risk_part, max_width)} │")
+        if recovery_part:
+            lines.append(f"│ {pad_to_width(recovery_part, max_width)} │")
         lines.append("└" + "─" * box_width + "┘")
         message = "\n".join(lines)
     elif description:
