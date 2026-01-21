@@ -6,19 +6,19 @@
 
 ---
 
-## 동작 예시
+## 적용 전 & 후
 
-Claude가 명령어를 실행할 때, CmdLens가 표시합니다:
+### 명령어 출력
 
-```
-┌─ 🔍 CmdLens ─────────────────────────────────
-│ find . -name "*.log" -mtime +7 -delete
-├──────────────────────────────────────────────
-│ 📋 7일 이상 된 .log 파일 찾아 삭제
-│ ⚠️  위험도: 🔴 Danger
-│ 💡 복구: 불가능, 백업 필요
-└──────────────────────────────────────────────
-```
+| 적용 전 | 적용 후 |
+|---------|---------|
+| ![before-output](docs/images/before-output.png) | ![after-output](docs/images/after-output.png) |
+
+### 사용자 승인 화면
+
+| 적용 전 | 적용 후 |
+|---------|---------|
+| ![before-permission](docs/images/before-permission.png) | ![after-permission](docs/images/after-permission.png) |
 
 ---
 

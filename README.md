@@ -6,19 +6,19 @@
 
 ---
 
-## Example
+## Before & After
 
-When Claude executes a command, CmdLens displays:
+### Command Output
 
-```
-┌─ 🔍 CmdLens ─────────────────────────────────
-│ find . -name "*.log" -mtime +7 -delete
-├──────────────────────────────────────────────
-│ 📋 Find and delete .log files older than 7 days
-│ ⚠️  Risk: 🔴 Danger
-│ 💡 Recovery: Impossible, backup needed
-└──────────────────────────────────────────────
-```
+| Before | After |
+|--------|-------|
+| ![before-output](docs/images/before-output.png) | ![after-output](docs/images/after-output.png) |
+
+### Permission Approval Screen
+
+| Before | After |
+|--------|-------|
+| ![before-permission](docs/images/before-permission.png) | ![after-permission](docs/images/after-permission.png) |
 
 ---
 
