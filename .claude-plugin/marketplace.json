@@ -1,0 +1,21 @@
+{
+  "name": "cmdlens-marketplace",
+  "owner": {
+    "name": "choam2426"
+  },
+  "metadata": {
+    "description": "CmdLens - Bash 명령어 설명 플러그인",
+    "version": "0.3.0"
+  },
+  "plugins": [
+    {
+      "name": "cmdlens",
+      "source": "./plugins/cmdlens",
+      "description": "모든 Bash 명령어 실행 전 위험도와 복구 방법을 표시",
+      "version": "0.3.0",
+      "author": { "name": "choam2426" },
+      "keywords": ["bash", "safety", "explanation"],
+      "license": "MIT"
+    }
+  ]
+}

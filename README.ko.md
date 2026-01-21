@@ -1,74 +1,127 @@
 # CmdLens
 
-**AI 코딩 에이전트가 실행하려는 명령어를 자동으로 설명해주는 크로스 플랫폼 플러그인**
+**명령어 실행 전 자동으로 설명해주는 Claude Code 플러그인**
 
-> 지원 플랫폼: Claude Code, Cursor, OpenCode.ai
+> 모든 Bash 명령어에 위험도와 복구 방법을 표시합니다.
 
 ---
 
 ## 동작 예시
 
-AI 에이전트가 명령어를 실행하려 할 때, CmdLens가 자동으로 설명을 표시합니다:
+Claude가 명령어를 실행할 때, CmdLens가 표시합니다:
 
 ```
-┌─────────────────────────────────────────────────────┐
-│ 🔍 CmdLens                                          │
-├─────────────────────────────────────────────────────┤
-│ find . -name "*.log" -mtime +7 -delete              │
-├─────────────────────────────────────────────────────┤
-│ 📋 이 명령어는:                                     │
-│    현재 폴더와 하위 폴더에서 .log 확장자를 가진     │
-│    파일 중 7일 이상 된 것들을 찾아서 삭제합니다.    │
-│                                                     │
-│ ⚠️ 위험도: 중간 (🟡)                                │
-│    • 파일이 영구 삭제됩니다 (휴지통을 거치지 않음)  │
-│    • 하위 폴더 전체에 재귀적으로 적용됩니다         │
-│                                                     │
-│ 💡 되돌리기: 삭제된 파일은 복구할 수 없습니다.      │
-│    중요한 파일이 있다면 먼저 백업을 권장합니다.     │
-└─────────────────────────────────────────────────────┘
+┌─ 🔍 CmdLens ─────────────────────────────────
+│ find . -name "*.log" -mtime +7 -delete
+├──────────────────────────────────────────────
+│ 📋 7일 이상 된 .log 파일 찾아 삭제
+│ ⚠️  위험도: 🔴 Danger
+│ 💡 복구: 불가능, 백업 필요
+└──────────────────────────────────────────────
 ```
 
 ---
 
 ## 주요 기능
 
-- **자동 명령어 설명** — 훅을 통해 모든 명령어 실행 전 자동으로 설명 표시
-- **위험도 표시** — 직관적인 위험 수준 표시 (🟢 안전 / 🟡 주의 / 🔴 위험)
-- **되돌리기 가이드** — 복구 방법 안내 또는 되돌릴 수 없음을 경고
-- **다국어 지원** — 한국어와 영어 지원
+- **자동 설명** — 모든 명령어에 위험도와 복구 정보 표시
+- **위험도 표시** — 직관적인 위험 수준 (🟢 Safe / 🟡 Caution / 🔴 Danger)
+- **복구 가이드** — 되돌리는 방법 또는 불가능 경고
+- **다국어 지원** — 사용자 언어에 맞춰 설명 (한국어/영어)
+- **의존성 없음** — 외부 API 호출 없음, 추가 패키지 불필요
 
 ---
 
 ## 설치 방법
 
-> 준비 중 — MVP 릴리스 후 설치 방법이 제공됩니다.
+### 방법 1: 마켓플레이스 (권장)
+
+```bash
+# 마켓플레이스 추가
+/plugin marketplace add choam2426/CmdLens
+
+# 플러그인 설치
+/plugin install cmdlens@cmdlens-marketplace
+```
+
+### 방법 2: 수동 설치
+
+1. 저장소 클론:
+
+```bash
+git clone https://github.com/choam2426/CmdLens.git
+```
+
+2. Claude Code 플러그인 디렉토리에 복사:
+
+```bash
+cp -r CmdLens/plugins/cmdlens ~/.claude/plugins/
+```
+
+3. Claude Code 재시작
 
 ---
 
 ## 작동 원리
 
 ```
-AI 에이전트가 명령어 실행 결정
-        ↓
-플랫폼 훅 발동 (PreToolUse / beforeShellExecution)
-        ↓
-CmdLens가 Claude Haiku API로 명령어 분석
-        ↓
-사용자에게 설명 표시
-        ↓
-사용자가 내용을 이해하고 승인 또는 거부
+세션 시작
+      ↓
+SessionStart 훅 → Claude에게 description 가이드 주입
+      ↓
+사용자 작업 요청
+      ↓
+Claude가 description 포함하여 Bash 명령어 준비
+      ↓
+PreToolUse 훅 → systemMessage로 위험도/복구 정보 표시
+      ↓
+명령어 실행
 ```
+
+**융합 접근법:** SessionStart(동작 변경)와 PreToolUse(표시)를 결합하여 일관되고 안정적인 출력을 제공합니다.
+
+---
+
+## 위험도 기준
+
+| 레벨 | 아이콘 | 설명 | 예시 |
+|------|--------|------|------|
+| Safe | 🟢 | 읽기 전용, 정보 조회 | `ls`, `cat`, `pwd`, `git status` |
+| Caution | 🟡 | 파일 수정, 설정 변경 | `mv`, `cp`, `chmod`, `git commit` |
+| Danger | 🔴 | 파일 삭제, 시스템 변경 | `rm -rf`, `sudo`, `git push --force` |
 
 ---
 
 ## 요구사항
 
-- Python 3.13+
-- Anthropic API 키
+- Python 3.10+
+- Claude Code
+
+---
+
+## 프로젝트 구조
+
+```
+CmdLens/
+├── .claude-plugin/
+│   └── marketplace.json
+├── plugins/
+│   └── cmdlens/
+│       ├── .claude-plugin/
+│       │   └── plugin.json
+│       ├── hooks/
+│       │   ├── hooks.json
+│       │   ├── session_start.py
+│       │   └── pre_tool_use.py
+│       └── prompts/
+│           └── description_guide.md
+├── docs/
+│   └── PRD.md
+└── README.md
+```
 
 ---
 
 ## 라이선스
 
-[Apache 2.0](LICENSE)
+[MIT](LICENSE)

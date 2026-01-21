@@ -1,75 +1,127 @@
 # CmdLens
 
-**A cross-platform plugin that automatically explains commands before AI coding agents execute them.**
+**A Claude Code plugin that automatically explains commands before execution.**
 
-> Supported Platforms: Claude Code, Cursor, OpenCode.ai
+> Every Bash command is displayed with risk level and recovery instructions.
 
 ---
 
 ## Example
 
-When an AI agent tries to execute a command, CmdLens automatically displays an explanation:
+When Claude executes a command, CmdLens displays:
 
 ```
-┌─────────────────────────────────────────────────────┐
-│ 🔍 CmdLens                                          │
-├─────────────────────────────────────────────────────┤
-│ find . -name "*.log" -mtime +7 -delete              │
-├─────────────────────────────────────────────────────┤
-│ 📋 This command:                                    │
-│    Finds all .log files in the current directory   │
-│    and subdirectories that are older than 7 days,  │
-│    then deletes them.                              │
-│                                                     │
-│ ⚠️ Risk Level: Medium (🟡)                          │
-│    • Files are permanently deleted (no trash)      │
-│    • Applies recursively to all subdirectories     │
-│                                                     │
-│ 💡 Undo: Deleted files cannot be recovered.        │
-│    Back up important files first.                  │
-└─────────────────────────────────────────────────────┘
+┌─ 🔍 CmdLens ─────────────────────────────────
+│ find . -name "*.log" -mtime +7 -delete
+├──────────────────────────────────────────────
+│ 📋 Find and delete .log files older than 7 days
+│ ⚠️  Risk: 🔴 Danger
+│ 💡 Recovery: Impossible, backup needed
+└──────────────────────────────────────────────
 ```
 
 ---
 
 ## Features
 
-- **Automatic Command Explanation** — Explains every command before execution via hooks
-- **Risk Level Indicator** — Visual risk assessment (🟢 Safe / 🟡 Caution / 🔴 Danger)
-- **Undo Guide** — Shows how to reverse the action, or warns if irreversible
-- **Multilingual Support** — Available in English and Korean
+- **Automatic Explanation** — Shows risk and recovery info for every command
+- **Risk Level Indicator** — Visual assessment (🟢 Safe / 🟡 Caution / 🔴 Danger)
+- **Recovery Guide** — How to undo, or warns if irreversible
+- **Multilingual Support** — Explains in user's language (English/Korean)
+- **Zero Dependencies** — No external API calls, no additional packages
 
 ---
 
 ## Installation
 
-> Coming soon — Installation instructions will be available after MVP release.
+### Option 1: Marketplace (Recommended)
+
+```bash
+# Add marketplace
+/plugin marketplace add choam2426/CmdLens
+
+# Install plugin
+/plugin install cmdlens@cmdlens-marketplace
+```
+
+### Option 2: Manual Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/choam2426/CmdLens.git
+```
+
+2. Copy plugin to Claude Code plugins directory:
+
+```bash
+cp -r CmdLens/plugins/cmdlens ~/.claude/plugins/
+```
+
+3. Restart Claude Code
 
 ---
 
 ## How It Works
 
 ```
-AI Agent decides to run a command
-        ↓
-Platform hook triggers (PreToolUse / beforeShellExecution)
-        ↓
-CmdLens analyzes the command via Claude Haiku API
-        ↓
-Explanation displayed to user
-        ↓
-User approves or rejects with full understanding
+Session Start
+      ↓
+SessionStart Hook → Inject description guide to Claude
+      ↓
+User requests task
+      ↓
+Claude prepares Bash command with description
+      ↓
+PreToolUse Hook → Display risk/recovery via systemMessage
+      ↓
+Command executes
 ```
+
+**Hybrid Approach:** Combines SessionStart (behavior modification) and PreToolUse (display) for consistent, reliable output.
+
+---
+
+## Risk Levels
+
+| Level | Icon | Description | Examples |
+|-------|------|-------------|----------|
+| Safe | 🟢 | Read-only, info query | `ls`, `cat`, `pwd`, `git status` |
+| Caution | 🟡 | File modification | `mv`, `cp`, `chmod`, `git commit` |
+| Danger | 🔴 | Deletion, system change | `rm -rf`, `sudo`, `git push --force` |
 
 ---
 
 ## Requirements
 
-- Python 3.13+
-- Anthropic API Key
+- Python 3.10+
+- Claude Code
+
+---
+
+## Project Structure
+
+```
+CmdLens/
+├── .claude-plugin/
+│   └── marketplace.json
+├── plugins/
+│   └── cmdlens/
+│       ├── .claude-plugin/
+│       │   └── plugin.json
+│       ├── hooks/
+│       │   ├── hooks.json
+│       │   ├── session_start.py
+│       │   └── pre_tool_use.py
+│       └── prompts/
+│           └── description_guide.md
+├── docs/
+│   └── PRD.md
+└── README.md
+```
 
 ---
 
 ## License
 
-[Apache 2.0](LICENSE)
+[MIT](LICENSE)
