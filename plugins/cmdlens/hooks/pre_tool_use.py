@@ -8,6 +8,30 @@ and displays it via systemMessage to the user.
 import json
 import re
 import sys
+import unicodedata
+
+
+def get_display_width(text: str) -> int:
+    """Calculate display width accounting for wide characters (emojis, CJK, etc.)."""
+    width = 0
+    for char in text:
+        # East Asian Width: F(ull), W(ide) = 2, others = 1
+        ea_width = unicodedata.east_asian_width(char)
+        if ea_width in ('F', 'W'):
+            width += 2
+        # Emojis and other symbols often have width 2
+        elif unicodedata.category(char) in ('So', 'Sk', 'Sm'):
+            width += 2
+        else:
+            width += 1
+    return width
+
+
+def pad_to_width(text: str, target_width: int) -> str:
+    """Pad text with spaces to reach target display width."""
+    current_width = get_display_width(text)
+    padding = target_width - current_width
+    return text + " " * max(0, padding)
 
 
 def parse_description(description: str) -> dict:
@@ -61,7 +85,7 @@ def format_message(command: str, parsed: dict) -> str:
     else:
         display_cmd = command
 
-    lines = ["┌─ 🔍 CmdLens ─────────────────────────────────"]
+    lines = ["", "┌─ 🔍 CmdLens ─────────────────────────────────"]
     lines.append(f"│ {display_cmd}")
     lines.append("├──────────────────────────────────────────────")
 
@@ -99,13 +123,20 @@ def main() -> None:
     else:
         display_cmd = command
 
-    # New format (starts with 📋): display as-is in box
+    # New format (starts with 📋): display in dynamic-width box
     if description.startswith("📋"):
-        lines = ["┌─ 🔍 CmdLens ─────────────────────────────────"]
-        lines.append(f"│ {display_cmd}")
-        lines.append("├──────────────────────────────────────────────")
-        lines.append(f"│ {description}")
-        lines.append("└──────────────────────────────────────────────")
+        title = "🔍 CmdLens"
+        content_lines = [display_cmd, description]
+        max_width = max(get_display_width(title), max(get_display_width(line) for line in content_lines))
+        box_width = max_width + 2
+
+        title_width = get_display_width(title)
+        lines = [""]
+        lines.append(f"┌─ {title} " + "─" * (box_width - title_width - 2) + "┐")
+        lines.append(f"│ {pad_to_width(display_cmd, max_width)} │")
+        lines.append("├" + "─" * box_width + "┤")
+        lines.append(f"│ {pad_to_width(description, max_width)} │")
+        lines.append("└" + "─" * box_width + "┘")
         message = "\n".join(lines)
     elif description:
         # Legacy format: parse and display
