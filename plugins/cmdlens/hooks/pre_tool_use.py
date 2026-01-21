@@ -93,13 +93,26 @@ def main() -> None:
     command = tool_input.get("command", "")
     description = tool_input.get("description", "")
     
-    # description이 있으면 파싱하여 표시
-    if description:
+    # 긴 명령어는 줄여서 표시
+    if len(command) > 40:
+        display_cmd = command[:37] + "..."
+    else:
+        display_cmd = command
+
+    # 새 형식(📋로 시작)이면 그대로 박스에 표시
+    if description.startswith("📋"):
+        lines = ["┌─ 🔍 CmdLens ─────────────────────────────────"]
+        lines.append(f"│ {display_cmd}")
+        lines.append("├──────────────────────────────────────────────")
+        lines.append(f"│ {description}")
+        lines.append("└──────────────────────────────────────────────")
+        message = "\n".join(lines)
+    elif description:
+        # 구 형식이면 파싱하여 표시
         parsed = parse_description(description)
         message = format_message(command, parsed)
     else:
-        # description이 없으면 명령어만 표시
-        message = f"[CmdLens] 실행 예정: {command}"
+        message = f"[CmdLens] 실행 예정: {display_cmd}"
     
     output = {
         "continue": True,
