@@ -55,8 +55,14 @@ def get_risk_icon(risk_level: str | None) -> str:
 
 def format_message(command: str, parsed: dict) -> str:
     """파싱된 정보를 사용자에게 표시할 메시지로 포맷팅합니다."""
+    # 긴 명령어는 줄여서 표시 (최대 40자)
+    if len(command) > 40:
+        display_cmd = command[:37] + "..."
+    else:
+        display_cmd = command
+
     lines = ["┌─ 🔍 CmdLens ─────────────────────────────────"]
-    lines.append(f"│ {command}")
+    lines.append(f"│ {display_cmd}")
     lines.append("├──────────────────────────────────────────────")
     
     if parsed["explanation"]:
@@ -83,7 +89,7 @@ def main() -> None:
         print(json.dumps(output))
         return
     
-    tool_input = hook_input.get("toolInput", {})
+    tool_input = hook_input.get("tool_input", {})
     command = tool_input.get("command", "")
     description = tool_input.get("description", "")
     
