@@ -3,7 +3,7 @@
 **A Claude Code plugin that automatically explains commands before execution.**
 
 > Every Bash command is displayed with risk level and recovery instructions.
-
+> [한국어](./README.ko.md)
 ---
 
 ## Before & After
