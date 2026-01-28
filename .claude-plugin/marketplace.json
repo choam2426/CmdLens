@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "CmdLens - Bash command explanation plugin",
-    "version": "0.3.0"
+    "version": "1.0.0"
   },
   "plugins": [
     {
       "name": "cmdlens",
       "source": "./plugins/cmdlens",
       "description": "Displays risk level and recovery info before every Bash command execution",
-      "version": "0.3.0",
+      "version": "1.0.0",
       "author": {
         "name": "choam2426"
       },
@@ -21,7 +21,7 @@
         "safety",
         "explanation"
       ],
-      "license": "MIT"
+      "license": "Apache-2.0"
     }
   ]
 }
